@@ -1,0 +1,238 @@
+html, body, #root {
+  height: 100%;
+  font-family: 'Verdana';
+  background-color: #1b1b1b;
+}
+
+.App {
+  text-align: center;
+  height: 100%;
+}
+
+.AppHogo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .AppLogo {
+    animation: App-Logo-Spin infinite 20s linear;
+  }
+}
+
+.AppHeader {
+  background-color: #1b1b1b;
+  height: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 1vmin);
+  font-weight: bold;
+  border-bottom: 1px solid #909090;
+  color: white;
+}
+
+.AppFooter {
+  background-color: #1b1b1b;
+  height: 10px;
+  border-top: 1px solid #909090;
+}
+
+.Top {
+  background-color: #4e4e4e;;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid #909090;
+  padding: 8px 0px;
+  width: 100%
+}
+
+.TopSection {
+  background-color: #4e4e4e;;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid #909090;
+  padding: 6px 0px;
+  width: 100%
+}
+
+.TopState {
+  background-color: #1b1b1b;;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid #909090;
+  padding: 12px;
+}
+
+.Background {
+  background-color: #1b1b1b;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.MainColumnDouble {
+  width: 1000px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #1b1b1b;
+  border-left: 1px solid #909090;
+  border-right: 1px solid #909090;
+}
+
+.MainColumn {
+  width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #1b1b1b;
+  border-right: 1px solid #909090;
+}
+
+.MainColumnContent {
+  padding: 12px 20px;
+  display: flex;
+  flex-direction: column;
+  background-color: #1b1b1b;
+}
+
+.WallSpread {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.ControlPanel {
+  color: #FFF;
+}
+
+.ControlPanelButton {
+  margin-right: 10px;
+}
+
+.SectionTitle {
+  color:#FFF;
+  margin: 0;
+  padding: 0;
+  align-self: center;
+}
+
+.CurrentShapesTitle {
+  color:#FFF;
+  margin: 0;
+  padding: 0;
+}
+
+.CurrentVolumesTitle {
+  color:#FFF;
+  margin: 0;
+  padding: 0;
+  align-self: flex-start;
+}
+
+.OtherTitle {
+  color:#FFF;
+  align-self: center;
+}
+
+.CurrentVolumes {
+  display: flex;
+  flex-direction: row;
+  padding: 10px 10px 40px 10px;
+}
+
+.ImageBackground {
+  width: 100px;
+  height: 100px;
+  background-color: #EEEEEE;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.CurrentVolumeImage {
+  width: 100px;
+  height: 100px;
+}
+
+.CurrentVolumeImageDissected {
+  width: 100px;
+  height: 100px;
+  outline: 4px solid yellow;
+  outline-offset: -4px;
+}
+
+.CurrentShapes {
+  padding-bottom: 10px;
+}
+
+.DroppedShapes {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.DroppedShape {
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.WallShapes {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.WallShape {
+  margin-bottom: 20px;
+  margin-top: 10px;
+}
+
+.RoomReadouts {
+  width: 240px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.LetterBackground {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.CalloutLetter {
+  font-size: 80px;
+}
+
+.RoomSendWrapper {
+  padding-top: 10px;
+}
+
+.RoomSendButtons {
+  margin-left: 15px;
+  margin-right: 15px;
+  border: 2px solid green;
+}
+
+.RoomSendButtonsUncleansed {
+  margin-left: 15px;
+  margin-right: 15px;
+  border: 2px solid red;
+}
+
+.Correct {
+  color: limegreen
+}
+
+.Incorrect {
+  color: red
+}
