@@ -111,12 +111,18 @@ function shuffleThreeD(shapes: TwoDSet): ThreeDSet {
   return newThreeD;
 }
 
-function initialiseWalls(volumes: ThreeDSet): WallSet {
-  let walls: WallSet = [[], [], []]
-  for (let i = 0; i < volumes.length; i++) {
-    walls[i] = structuredClone(ThreeDTwoDMap[volumes[i]]);
+function initialiseWalls(shapes: TwoDSet): WallSet {
+  let spareShapes = [TwoD.circle, TwoD.triangle, TwoD.square]
+  for (let i = spareShapes.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [spareShapes[i], spareShapes[j]] = [spareShapes[j], spareShapes[i]];
   }
-  return walls
+  const newWalls: WallSet = [
+    [shapes[0], spareShapes[0]],
+    [shapes[1], spareShapes[1]],
+    [shapes[2], spareShapes[2]],
+  ];
+  return newWalls;
 }
 
 function renderMainControls(
@@ -297,7 +303,7 @@ function App() {
   const [shapes, setShapes] = useState<TwoDSet>(shuffleTwoD());
   const [initialVolumes, setInitialVolumes] = useState<ThreeDSet>(shuffleThreeD(shapes));
   const [volumes, setVolumes] = useState<ThreeDSet>(initialVolumes);
-  const [initialWalls, setInitialWalls] = useState<WallSet>(initialiseWalls(initialVolumes));
+  const [initialWalls, setInitialWalls] = useState<WallSet>(initialiseWalls(shapes));
   const [walls, setWalls] = useState<WallSet>(structuredClone(initialWalls));
   const [currentlyHeld, setCurrentlyHeld] = useState<TwoD|null>(null);
   const [currentlyDissected, setCurrentlyDissected] = useState<[number, TwoD]|null>(null);
@@ -338,7 +344,7 @@ function App() {
           () => {
             const newShapes = shuffleTwoD();
             const newVolumes = shuffleThreeD(newShapes);
-            const newWalls = initialiseWalls(newVolumes);
+            const newWalls = initialiseWalls(newShapes);
             setInitialVolumes(newVolumes);
             setInitialWalls(structuredClone(newWalls));
             setVolumes(newVolumes);
