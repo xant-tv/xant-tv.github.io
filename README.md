@@ -1,4 +1,3 @@
-# Pages
 I am a data engineer, not a front-end developer. I know nothing about Typescript or any web frameworks. Despite that, I may be running a bunch of prototype stuff through these pages.
 
 ## [Verity Simulator](https://xant-tv.github.io/verity-simulator)
