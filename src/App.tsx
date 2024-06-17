@@ -20,11 +20,11 @@ enum TwoD {
   square = 4,
 }
 
-const TwoDMap = {
-  1: TwoD.circle,
-  2: TwoD.triangle,
-  4: TwoD.square
-}
+// const TwoDMap = {
+//   1: TwoD.circle,
+//   2: TwoD.triangle,
+//   4: TwoD.square
+// }
 
 const TwoDImages = {
   [TwoD.circle]: imageCircle,
@@ -58,14 +58,14 @@ const ThreeDMap = {
   6: ThreeD.prism,
 }
 
-const ThreeDTwoDMap = {
-  [ThreeD.sphere]: [TwoD.circle, TwoD.circle],
-  [ThreeD.tetrahedron]: [TwoD.triangle, TwoD.triangle],
-  [ThreeD.cube]: [TwoD.square, TwoD.square],
-  [ThreeD.cone]: [TwoD.circle, TwoD.triangle],
-  [ThreeD.cylinder]: [TwoD.circle, TwoD.square],
-  [ThreeD.prism]: [TwoD.triangle, TwoD.square]
-}
+// const ThreeDTwoDMap = {
+//   [ThreeD.sphere]: [TwoD.circle, TwoD.circle],
+//   [ThreeD.tetrahedron]: [TwoD.triangle, TwoD.triangle],
+//   [ThreeD.cube]: [TwoD.square, TwoD.square],
+//   [ThreeD.cone]: [TwoD.circle, TwoD.triangle],
+//   [ThreeD.cylinder]: [TwoD.circle, TwoD.square],
+//   [ThreeD.prism]: [TwoD.triangle, TwoD.square]
+// }
 
 const ThreeDImages = {
   [ThreeD.sphere]: imageSphere,
@@ -312,9 +312,9 @@ function App() {
   const [currentlyHeldInsideThree, setCurrentlyHeldInsideThree] = useState<number|null>(null);
   const [shapesDropped, setShapesDropped] = useState<[number, TwoD][]>([]);
   const [shapesNotDropped, setShapesNotDropped] = useState<TwoD[]>(shuffleTwoD());
-  const [roomOneSentTargets, setRoomOneSentTargets] = useState<boolean[]>([false]);
-  const [roomTwoSentTargets, setRoomTwoSentTargets] = useState<boolean[]>([false]);
-  const [roomThreeSentTargets, setRoomThreeSentTargets] = useState<boolean[]>([false]);
+  const [roomOneSentTargets, setRoomOneSentTargets] = useState<boolean[]>([false, false]);
+  const [roomTwoSentTargets, setRoomTwoSentTargets] = useState<boolean[]>([false, false]);
+  const [roomThreeSentTargets, setRoomThreeSentTargets] = useState<boolean[]>([false, false]);
 
   const softReset = () => {
     setCurrentlyHeld(null);
@@ -324,9 +324,9 @@ function App() {
     setCurrentlyHeldInsideThree(null);
     setShapesDropped([]);
     setShapesNotDropped(shuffleTwoD());
-    setRoomOneSentTargets([false]);
-    setRoomTwoSentTargets([false]);
-    setRoomThreeSentTargets([false]);
+    setRoomOneSentTargets([false, false]);
+    setRoomTwoSentTargets([false, false]);
+    setRoomThreeSentTargets([false, false]);
   }
 
   return (
