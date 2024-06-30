@@ -78,6 +78,7 @@ const ThreeDImages = {
 
 type ThreeDSet = [ThreeD, ThreeD, ThreeD];
 type WallSet = [TwoD[], TwoD[], TwoD[]];
+type CleanseSet = [boolean[], boolean[], boolean[]]
 
 function shuffleTwoD(): TwoDSet {
   let array: TwoDSet = [TwoD.circle, TwoD.triangle, TwoD.square];
@@ -125,6 +126,15 @@ function initialiseWalls(shapes: TwoDSet): WallSet {
   return newWalls;
 }
 
+function initialiseCleanse(): CleanseSet {
+  const newCleanse: CleanseSet = [
+    [false, false],
+    [false, false],
+    [false, false]
+  ]
+  return newCleanse
+}
+
 function renderMainControls(
   onReset: () => void,
   onResetAndRandomize: () => void,
@@ -167,12 +177,13 @@ function renderCurrentWall(
   pickUp: (index: number) => void,
   targets: number[],
   sendToTarget: (idx: number, target: number, index: number|null) => void,
-  sentToTarget: boolean[]
+  sentToTarget: boolean[],
+  cleansed: boolean[]
 ) {
 
   const wallImages = wall.map((shape, i) => {
     return <div className="ImageBackground WallShape">
-      <img src={TwoDImages[shape]} alt="CurrentShapeA" className={(isHolding !== null && isHolding === i) ? "CurrentVolumeImageDissected" : "CurrentVolumeImage"}/>
+      <img src={TwoDImages[shape]} alt="CurrentShapeA" className={(isHolding !== null && isHolding === i) ? "CurrentVolumeImageDissected" : (cleansed[i]) ? "CurrentVolumeImageCleansed" : "CurrentVolumeImageUncleansed"}/>
       <button onClick={() => pickUp(i)} disabled={isHeld}>Pick Up</button>
     </div>;
   });
@@ -182,8 +193,8 @@ function renderCurrentWall(
       {wallImages}
     </div>
     <div className="RoomSendWrapper">
-      <button className={sentToTarget[0] ? "RoomSendButtons" : "RoomSendButtonsUncleansed"} onClick={() => sendToTarget(0, targets[0], isHolding)} disabled={!isHeld}>Send Room {targets[0] + 1}</button>
-      <button className={sentToTarget[1] ? "RoomSendButtons" : "RoomSendButtonsUncleansed"} onClick={() => sendToTarget(1, targets[1], isHolding)} disabled={!isHeld}>Send Room {targets[1] + 1}</button>
+      <button className="RoomSendButtons" onClick={() => sendToTarget(0, targets[0], isHolding)} disabled={!isHeld}>Send Room {targets[0] + 1}</button>
+      <button className="RoomSendButtons" onClick={() => sendToTarget(1, targets[1], isHolding)} disabled={!isHeld}>Send Room {targets[1] + 1}</button>
     </div>
   </>
 
@@ -262,12 +273,10 @@ function renderKnightControls(
 function renderRoomsCorrect(
   shapes: TwoDSet,
   walls: WallSet,
-  roomOne: boolean[],
-  roomTwo: boolean[],
-  roomThree: boolean[]
+  cleansed: CleanseSet
 ) {
 
-  const isCorrect = determineWallsCorrect(shapes, walls, [roomOne, roomTwo, roomThree]);
+  const isCorrect = determineWallsCorrect(shapes, walls, cleansed);
 
   return <>
     <h2 className="OtherTitle">Solution (<span className={isCorrect ? "Correct" : "Incorrect"}>{isCorrect ? 'Correct!' : 'Incorrect'}</span>)</h2>
@@ -305,6 +314,8 @@ function App() {
   const [volumes, setVolumes] = useState<ThreeDSet>(initialVolumes);
   const [initialWalls, setInitialWalls] = useState<WallSet>(initialiseWalls(shapes));
   const [walls, setWalls] = useState<WallSet>(structuredClone(initialWalls));
+  const [initialCleanse, setInitialCleanse] = useState<CleanseSet>(initialiseCleanse());
+  const [cleansed, setCleansed] = useState<CleanseSet>(structuredClone(initialCleanse));
   const [currentlyHeld, setCurrentlyHeld] = useState<TwoD|null>(null);
   const [currentlyDissected, setCurrentlyDissected] = useState<[number, TwoD]|null>(null);
   const [currentlyHeldInsideOne, setCurrentlyHeldInsideOne] = useState<number|null>(null);
@@ -339,17 +350,21 @@ function App() {
           () => {
             setVolumes(initialVolumes);
             setWalls(structuredClone(initialWalls));
+            setCleansed(structuredClone(initialCleanse));
             softReset();
           },
           () => {
             const newShapes = shuffleTwoD();
             const newVolumes = shuffleThreeD(newShapes);
             const newWalls = initialiseWalls(newShapes);
+            const newCleanse = initialiseCleanse();
             setInitialVolumes(newVolumes);
             setInitialWalls(structuredClone(newWalls));
+            setInitialCleanse(structuredClone(newCleanse));
+            setShapes(newShapes);
             setVolumes(newVolumes);
             setWalls(newWalls);
-            setShapes(newShapes);
+            setCleansed(newCleanse);
             softReset();
           },
           useLetters,
@@ -380,13 +395,16 @@ function App() {
                   (idx: number, target: number, index: number|null) => {
                     if (index != null) {
                       walls[target].push(...walls[0].splice(index, 1));
+                      cleansed[0].splice(index, 1);
+                      cleansed[target].push(true);
                       roomOneSentTargets[idx] = true;
                       setWalls(walls);
                       setCurrentlyHeldInsideOne(null);
                       setRoomOneSentTargets(roomOneSentTargets);
                     }
                   },
-                  roomOneSentTargets
+                  roomOneSentTargets,
+                  cleansed[0]
                 )}
               </div>
               <div className="RoomReadouts">
@@ -402,13 +420,16 @@ function App() {
                   (idx: number, target: number, index: number|null) => {
                     if (index != null) {
                       walls[target].push(...walls[1].splice(index, 1));
+                      cleansed[1].splice(index, 1);
+                      cleansed[target].push(true);
                       roomTwoSentTargets[idx] = true;
                       setWalls(walls);
                       setCurrentlyHeldInsideTwo(null);
                       setRoomTwoSentTargets(roomTwoSentTargets);
                     }
                   },
-                  roomTwoSentTargets
+                  roomTwoSentTargets,
+                  cleansed[1]
                 )}
               </div>
               <div className="RoomReadouts">
@@ -424,22 +445,23 @@ function App() {
                   (idx: number, target: number, index: number|null) => {
                     if (index != null) {
                       walls[target].push(...walls[2].splice(index, 1));
+                      cleansed[2].splice(index, 1);
+                      cleansed[target].push(true);
                       roomThreeSentTargets[idx] = true;
                       setWalls(walls);
                       setCurrentlyHeldInsideThree(null);
                       setRoomThreeSentTargets(roomThreeSentTargets);
                     }
                   },
-                  roomThreeSentTargets
+                  roomThreeSentTargets,
+                  cleansed[2]
                 )}
               </div>
             </div>
             {renderRoomsCorrect(
               shapes,
               walls,
-              roomOneSentTargets,
-              roomTwoSentTargets,
-              roomThreeSentTargets
+              cleansed
             )}
           </div>
         </div>
