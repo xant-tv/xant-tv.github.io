@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/verity-simulator/static/css/main.62e57817.css",
-    "main.js": "/verity-simulator/static/js/main.c963c1ab.js",
+    "main.js": "/verity-simulator/static/js/main.4310f9d4.js",
     "static/media/cone.png": "/verity-simulator/static/media/cone.ca1b92681e3eae51b172.png",
     "static/media/sphere.png": "/verity-simulator/static/media/sphere.cb1227ef91602e8ecd11.png",
     "static/media/tetrahedron.png": "/verity-simulator/static/media/tetrahedron.5bfadb9b4f076b3ad9df.png",
@@ -10,10 +10,10 @@
     "static/media/cylinder.png": "/verity-simulator/static/media/cylinder.a99173765a23e7b94889.png",
     "index.html": "/verity-simulator/index.html",
     "main.62e57817.css.map": "/verity-simulator/static/css/main.62e57817.css.map",
-    "main.c963c1ab.js.map": "/verity-simulator/static/js/main.c963c1ab.js.map"
+    "main.4310f9d4.js.map": "/verity-simulator/static/js/main.4310f9d4.js.map"
   },
   "entrypoints": [
     "static/css/main.62e57817.css",
-    "static/js/main.c963c1ab.js"
+    "static/js/main.4310f9d4.js"
   ]
 }

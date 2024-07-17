@@ -303,7 +303,7 @@ function renderOverall(
 
 function determineIsCorrect(shapes: TwoDSet, volumes: ThreeDSet) {
   return volumes.every((volume, i) => {
-    return SolutionMap[shapes[i]].includes(volume)
+    return SolutionMap[shapes[i]].includes(volume);
   });
 }
 
@@ -330,7 +330,10 @@ function determineWallsMatchVolumes(walls: WallSet, volumes: ThreeDSet) {
     return false;
   }
   return volumes.every((volume, i) => {
-    return volume.valueOf() === walls[i].reduce((a, b) => a + b)
+    if (walls[i].length !== 2) {
+      return false;
+    }
+    return walls[i].reduce((a, b) => a + b) === volume.valueOf();
   });
 }
 
