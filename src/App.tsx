@@ -1,8 +1,8 @@
 import './App.css';
 
-import imageCircle from './shapes/circle.png'
-import imageTriangle from './shapes/triangle.png'
-import imageSquare from './shapes/square.png'
+import imageCircle from './shapes/circle.png';
+import imageTriangle from './shapes/triangle.png';
+import imageSquare from './shapes/square.png';
 
 import imageSphere from './shapes/sphere.png';
 import imageTetrahedron from './shapes/tetrahedron.png';
@@ -74,6 +74,12 @@ const ThreeDImages = {
   [ThreeD.cone]: imageCone,
   [ThreeD.cylinder]: imageCylinder,
   [ThreeD.prism]: imagePrism,
+}
+
+const SolutionMap = {
+  [TwoD.circle]: [ThreeD.tetrahedron, ThreeD.cube, ThreeD.prism],
+  [TwoD.triangle]: [ThreeD.sphere, ThreeD.cube, ThreeD.cylinder],
+  [TwoD.square]: [ThreeD.sphere, ThreeD.tetrahedron, ThreeD.cone]
 }
 
 type ThreeDSet = [ThreeD, ThreeD, ThreeD];
@@ -283,9 +289,21 @@ function renderRoomsCorrect(
   </>;
 }
 
+function renderOverall(
+  walls: WallSet,
+  volumes: ThreeDSet,
+) {
+
+  const isCorrect = determineWallsMatchVolumes(walls, volumes);
+
+  return <>
+    <h2 className="SectionTitle">Overall Match (<span className={isCorrect ? "Correct" : "Incorrect"}>{isCorrect ? 'Correct!' : 'Incorrect'}</span>)</h2>
+  </>
+}
+
 function determineIsCorrect(shapes: TwoDSet, volumes: ThreeDSet) {
   return volumes.every((volume, i) => {
-    return Math.log2(volume - shapes[i]) % 1 !== 0 && Math.log2(volume / 2) % 1 !== 0;
+    return SolutionMap[shapes[i]].includes(volume)
   });
 }
 
@@ -305,6 +323,15 @@ function determineWallsCorrect(shapes: TwoDSet, walls: WallSet, rooms: [boolean[
     return determineIsCorrect(shapes, effectiveVolumes);
   }
   return false;
+}
+
+function determineWallsMatchVolumes(walls: WallSet, volumes: ThreeDSet) {
+  if (walls.length !== volumes.length) {
+    return false;
+  }
+  return volumes.every((volume, i) => {
+    return volume.valueOf() === walls[i].reduce((a, b) => a + b)
+  });
 }
 
 function App() {
@@ -375,151 +402,156 @@ function App() {
         <div className="Readouts"></div>
         {renderCurrentShapes(shapes, useLetters)}
       </div>
-      <div className="Background">
-        <div className="MainColumnDouble">
-        <div className="TopSection">
-            <h2 className="SectionTitle">Inside</h2>
+      <div className="OuterBackground">
+        <div className="Background">
+          <div className="MainColumnDouble">
+            <div className="TopSection">
+              <h2 className="SectionTitle">Inside</h2>
+            </div>
+            <div className="MainColumnContent">
+              <div className="WallSpread">
+                <div className="RoomReadouts">
+                  <h2 className={"CurrentVolumesTitle"}>Room 1</h2>
+                  {renderCurrentWall(
+                    walls[0], 
+                    currentlyHeldInsideOne,
+                    currentlyHeldInsideOne != null,
+                    (index: number) => {
+                      setCurrentlyHeldInsideOne(index);
+                    },
+                    [1, 2],
+                    (idx: number, target: number, index: number|null) => {
+                      if (index != null) {
+                        walls[target].push(...walls[0].splice(index, 1));
+                        cleansed[0].splice(index, 1);
+                        cleansed[target].push(true);
+                        roomOneSentTargets[idx] = true;
+                        setWalls(walls);
+                        setCurrentlyHeldInsideOne(null);
+                        setRoomOneSentTargets(roomOneSentTargets);
+                      }
+                    },
+                    roomOneSentTargets,
+                    cleansed[0]
+                  )}
+                </div>
+                <div className="RoomReadouts">
+                  <h2 className={"CurrentVolumesTitle"}>Room 2</h2>
+                  {renderCurrentWall(
+                    walls[1],
+                    currentlyHeldInsideTwo,
+                    currentlyHeldInsideTwo != null,
+                    (index: number) => {
+                      setCurrentlyHeldInsideTwo(index);
+                    },
+                    [0, 2],
+                    (idx: number, target: number, index: number|null) => {
+                      if (index != null) {
+                        walls[target].push(...walls[1].splice(index, 1));
+                        cleansed[1].splice(index, 1);
+                        cleansed[target].push(true);
+                        roomTwoSentTargets[idx] = true;
+                        setWalls(walls);
+                        setCurrentlyHeldInsideTwo(null);
+                        setRoomTwoSentTargets(roomTwoSentTargets);
+                      }
+                    },
+                    roomTwoSentTargets,
+                    cleansed[1]
+                  )}
+                </div>
+                <div className="RoomReadouts">
+                  <h2 className={"CurrentVolumesTitle"}>Room 3</h2>
+                  {renderCurrentWall(
+                    walls[2], 
+                    currentlyHeldInsideThree,
+                    currentlyHeldInsideThree != null,
+                    (index: number) => {
+                      setCurrentlyHeldInsideThree(index);
+                    },
+                    [0, 1],
+                    (idx: number, target: number, index: number|null) => {
+                      if (index != null) {
+                        walls[target].push(...walls[2].splice(index, 1));
+                        cleansed[2].splice(index, 1);
+                        cleansed[target].push(true);
+                        roomThreeSentTargets[idx] = true;
+                        setWalls(walls);
+                        setCurrentlyHeldInsideThree(null);
+                        setRoomThreeSentTargets(roomThreeSentTargets);
+                      }
+                    },
+                    roomThreeSentTargets,
+                    cleansed[2]
+                  )}
+                </div>
+              </div>
+              {renderRoomsCorrect(
+                shapes,
+                walls,
+                cleansed
+              )}
+            </div>
           </div>
-          <div className="MainColumnContent">
-            <div className="WallSpread">
-              <div className="RoomReadouts">
-                <h2 className={"CurrentVolumesTitle"}>Room 1</h2>
-                {renderCurrentWall(
-                  walls[0], 
-                  currentlyHeldInsideOne,
-                  currentlyHeldInsideOne != null,
+          <div className="MainColumn">
+            <div className="TopSection">
+              <h2 className="SectionTitle">Outside</h2>
+            </div>
+            <div className="MainColumnContent">
+              <div className="Readouts">
+                {renderCurrentVolumes(
+                  volumes,
+                  shapes,
+                  currentlyHeld,
+                  currentlyDissected,
                   (index: number) => {
-                    setCurrentlyHeldInsideOne(index);
-                  },
-                  [1, 2],
-                  (idx: number, target: number, index: number|null) => {
-                    if (index != null) {
-                      walls[target].push(...walls[0].splice(index, 1));
-                      cleansed[0].splice(index, 1);
-                      cleansed[target].push(true);
-                      roomOneSentTargets[idx] = true;
-                      setWalls(walls);
-                      setCurrentlyHeldInsideOne(null);
-                      setRoomOneSentTargets(roomOneSentTargets);
+                    if (currentlyDissected === null) {
+                      setCurrentlyDissected([index, currentlyHeld || 0]);
+                      setCurrentlyHeld(null);
+                      return;
                     }
-                  },
-                  roomOneSentTargets,
-                  cleansed[0]
+                    const newVolumes: ThreeDSet = [...volumes];
+                    const firstSwap = currentlyDissected[1];
+                    const secondSwap = currentlyHeld || 0;
+                    const firstVolumeIndex = currentlyDissected[0];
+                    const secondVolumeIndex = index;
+                    newVolumes[firstVolumeIndex] += secondSwap - firstSwap;
+                    newVolumes[secondVolumeIndex] += firstSwap - secondSwap;
+                    setVolumes(newVolumes);
+                    setCurrentlyDissected(null);
+                    setCurrentlyHeld(null);
+                  }
                 )}
-              </div>
-              <div className="RoomReadouts">
-                <h2 className={"CurrentVolumesTitle"}>Room 2</h2>
-                {renderCurrentWall(
-                  walls[1],
-                  currentlyHeldInsideTwo,
-                  currentlyHeldInsideTwo != null,
+                {renderShapeHeld(currentlyHeld)}
+                {renderShapesDropped(
+                  shapesDropped,
+                  currentlyHeld != null,
                   (index: number) => {
-                    setCurrentlyHeldInsideTwo(index);
-                  },
-                  [0, 2],
-                  (idx: number, target: number, index: number|null) => {
-                    if (index != null) {
-                      walls[target].push(...walls[1].splice(index, 1));
-                      cleansed[1].splice(index, 1);
-                      cleansed[target].push(true);
-                      roomTwoSentTargets[idx] = true;
-                      setWalls(walls);
-                      setCurrentlyHeldInsideTwo(null);
-                      setRoomTwoSentTargets(roomTwoSentTargets);
-                    }
-                  },
-                  roomTwoSentTargets,
-                  cleansed[1]
+                    const newShapesDropped = [...shapesDropped];
+                    const [pickedUpShape] = newShapesDropped.splice(index, 1);
+                    setCurrentlyHeld(pickedUpShape[1]);
+                    setShapesDropped(newShapesDropped);
+                  }
                 )}
-              </div>
-              <div className="RoomReadouts">
-                <h2 className={"CurrentVolumesTitle"}>Room 3</h2>
-                {renderCurrentWall(
-                  walls[2], 
-                  currentlyHeldInsideThree,
-                  currentlyHeldInsideThree != null,
-                  (index: number) => {
-                    setCurrentlyHeldInsideThree(index);
+                {renderKnightControls(
+                  shapesNotDropped,
+                  () => {
+                    const newShapesNotDropped = shapesNotDropped;
+                    const newShapeDropped = newShapesNotDropped.pop() || TwoD.circle;
+                    setShapesNotDropped(newShapesNotDropped);
+                    setShapesDropped([...shapesDropped, [Date.now(), newShapeDropped]])
                   },
-                  [0, 1],
-                  (idx: number, target: number, index: number|null) => {
-                    if (index != null) {
-                      walls[target].push(...walls[2].splice(index, 1));
-                      cleansed[2].splice(index, 1);
-                      cleansed[target].push(true);
-                      roomThreeSentTargets[idx] = true;
-                      setWalls(walls);
-                      setCurrentlyHeldInsideThree(null);
-                      setRoomThreeSentTargets(roomThreeSentTargets);
-                    }
+                  () => {
+                    setShapesDropped([])
+                    setShapesNotDropped(shuffleTwoD())
                   },
-                  roomThreeSentTargets,
-                  cleansed[2]
                 )}
               </div>
             </div>
-            {renderRoomsCorrect(
-              shapes,
-              walls,
-              cleansed
-            )}
           </div>
         </div>
-        <div className="MainColumn">
-          <div className="TopSection">
-            <h2 className="SectionTitle">Outside</h2>
-          </div>
-          <div className="MainColumnContent">
-            <div className="Readouts">
-              {renderCurrentVolumes(
-                volumes,
-                shapes,
-                currentlyHeld,
-                currentlyDissected,
-                (index: number) => {
-                  if (currentlyDissected === null) {
-                    setCurrentlyDissected([index, currentlyHeld || 0]);
-                    setCurrentlyHeld(null);
-                    return;
-                  }
-                  const newVolumes: ThreeDSet = [...volumes];
-                  const firstSwap = currentlyDissected[1];
-                  const secondSwap = currentlyHeld || 0;
-                  const firstVolumeIndex = currentlyDissected[0];
-                  const secondVolumeIndex = index;
-                  newVolumes[firstVolumeIndex] += secondSwap - firstSwap;
-                  newVolumes[secondVolumeIndex] += firstSwap - secondSwap;
-                  setVolumes(newVolumes);
-                  setCurrentlyDissected(null);
-                  setCurrentlyHeld(null);
-                }
-              )}
-              {renderShapeHeld(currentlyHeld)}
-              {renderShapesDropped(
-                shapesDropped,
-                currentlyHeld != null,
-                (index: number) => {
-                  const newShapesDropped = [...shapesDropped];
-                  const [pickedUpShape] = newShapesDropped.splice(index, 1);
-                  setCurrentlyHeld(pickedUpShape[1]);
-                  setShapesDropped(newShapesDropped);
-                }
-              )}
-              {renderKnightControls(
-                shapesNotDropped,
-                () => {
-                  const newShapesNotDropped = shapesNotDropped;
-                  const newShapeDropped = newShapesNotDropped.pop() || TwoD.circle;
-                  setShapesNotDropped(newShapesNotDropped);
-                  setShapesDropped([...shapesDropped, [Date.now(), newShapeDropped]])
-                },
-                () => {
-                  setShapesDropped([])
-                  setShapesNotDropped(shuffleTwoD())
-                },
-              )}
-            </div>
-          </div>
+        <div className="Final">
+          {renderOverall(walls, volumes)}
         </div>
       </div>
       <footer className="AppFooter"></footer>
