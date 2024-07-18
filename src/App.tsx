@@ -134,9 +134,9 @@ function initialiseWalls(shapes: TwoDSet): WallSet {
 
 function initialiseCleanse(): CleanseSet {
   const newCleanse: CleanseSet = [
-    [false, false],
-    [false, false],
-    [false, false]
+    [false, false, false],
+    [false, false, false],
+    [false, false, false]
   ]
   return newCleanse
 }
@@ -182,14 +182,14 @@ function renderCurrentWall(
   isHeld: boolean,
   pickUp: (index: number) => void,
   targets: number[],
-  sendToTarget: (idx: number, target: number, index: number|null) => void,
+  sendToTarget: (statue_idx: number, statue_target: number, held_idx: number|null) => void,
   sentToTarget: boolean[],
   cleansed: boolean[]
 ) {
 
   const wallImages = wall.map((shape, i) => {
     return <div className="ImageBackground WallShape">
-      <img src={TwoDImages[shape]} alt="CurrentShapeA" className={(isHolding !== null && isHolding === i) ? "CurrentVolumeImageDissected" : (cleansed[i]) ? "CurrentVolumeImageCleansed" : "CurrentVolumeImageUncleansed"}/>
+      <img src={TwoDImages[shape]} alt="CurrentShapeA" className={(isHolding !== null && isHolding === i) ? "CurrentVolumeImageDissected" : "CurrentVolumeImage"}/>
       <button onClick={() => pickUp(i)} disabled={isHeld}>Pick Up</button>
     </div>;
   });
@@ -199,8 +199,8 @@ function renderCurrentWall(
       {wallImages}
     </div>
     <div className="RoomSendWrapper">
-      <button className="RoomSendButtons" onClick={() => sendToTarget(0, targets[0], isHolding)} disabled={!isHeld}>Send Room {targets[0] + 1}</button>
-      <button className="RoomSendButtons" onClick={() => sendToTarget(1, targets[1], isHolding)} disabled={!isHeld}>Send Room {targets[1] + 1}</button>
+      <button className={cleansed[targets[0]] ? "RoomSendButtonsCleansed" : "RoomSendButtonsUncleansed"} onClick={() => sendToTarget(0, targets[0], isHolding)} disabled={!isHeld}>Send Room {targets[0] + 1}</button>
+      <button className={cleansed[targets[1]] ? "RoomSendButtonsCleansed" : "RoomSendButtonsUncleansed"} onClick={() => sendToTarget(1, targets[1], isHolding)} disabled={!isHeld}>Send Room {targets[1] + 1}</button>
     </div>
   </>
 
@@ -312,7 +312,12 @@ function determineWallsCorrect(shapes: TwoDSet, walls: WallSet, rooms: [boolean[
     return wall.length === 2;
   });
   let roomsCleansed = rooms.every((room, i) => {
-    return room.every(b => b === true);
+    return room.every((b, j) => {
+      if (i === j) {
+        return true;
+      }
+      return b;
+    });
   });
   if (roomSizes && roomsCleansed) {
     let effectiveVolumes: ThreeDSet = [
@@ -375,6 +380,14 @@ function App() {
       <header className="AppHeader">
         <h1>Verity Simulator</h1>
       </header>
+      <div>
+        {/* <h2 className="SectionTitle">Conditions</h2> */}
+        <div className="ConditionsBlock">
+          <span className="ConditionsText"><b>1.</b> Inside rooms must create a 3D shape that does not contain the 2D shape their statue is holding.<br></br></span>
+          <span className="ConditionsText"><b>2.</b> All outside 3D shapes must match the shape created within the corresponding inside room.<br></br></span>
+          <span className="ConditionsText"><b>3.</b> Each room must cleanse the shadows held by the other two statues by receiving that 2D shape from another room.</span>
+        </div>
+      </div>
       <div className="Top">
         {renderMainControls(
           () => {
@@ -407,6 +420,7 @@ function App() {
       </div>
       <div className="OuterBackground">
         <div className="Background">
+
           <div className="MainColumnDouble">
             <div className="TopSection">
               <h2 className="SectionTitle">Inside</h2>
@@ -423,12 +437,11 @@ function App() {
                       setCurrentlyHeldInsideOne(index);
                     },
                     [1, 2],
-                    (idx: number, target: number, index: number|null) => {
-                      if (index != null) {
-                        walls[target].push(...walls[0].splice(index, 1));
-                        cleansed[0].splice(index, 1);
-                        cleansed[target].push(true);
-                        roomOneSentTargets[idx] = true;
+                    (statue_idx: number, statue_target: number, held_idx: number|null) => {
+                      if (held_idx != null) {
+                        cleansed[statue_target][shapes.indexOf(walls[0][held_idx])] = true;
+                        walls[statue_target].push(...walls[0].splice(held_idx, 1));
+                        roomOneSentTargets[statue_idx] = true;
                         setWalls(walls);
                         setCurrentlyHeldInsideOne(null);
                         setRoomOneSentTargets(roomOneSentTargets);
@@ -448,12 +461,11 @@ function App() {
                       setCurrentlyHeldInsideTwo(index);
                     },
                     [0, 2],
-                    (idx: number, target: number, index: number|null) => {
-                      if (index != null) {
-                        walls[target].push(...walls[1].splice(index, 1));
-                        cleansed[1].splice(index, 1);
-                        cleansed[target].push(true);
-                        roomTwoSentTargets[idx] = true;
+                    (statue_idx: number, statue_target: number, held_idx: number|null) => {
+                      if (held_idx != null) {
+                        cleansed[statue_target][shapes.indexOf(walls[1][held_idx])] = true;
+                        walls[statue_target].push(...walls[1].splice(held_idx, 1));
+                        roomTwoSentTargets[statue_idx] = true;
                         setWalls(walls);
                         setCurrentlyHeldInsideTwo(null);
                         setRoomTwoSentTargets(roomTwoSentTargets);
@@ -473,12 +485,11 @@ function App() {
                       setCurrentlyHeldInsideThree(index);
                     },
                     [0, 1],
-                    (idx: number, target: number, index: number|null) => {
-                      if (index != null) {
-                        walls[target].push(...walls[2].splice(index, 1));
-                        cleansed[2].splice(index, 1);
-                        cleansed[target].push(true);
-                        roomThreeSentTargets[idx] = true;
+                    (statue_idx: number, statue_target: number, held_idx: number|null) => {
+                      if (held_idx != null) {
+                        cleansed[statue_target][shapes.indexOf(walls[2][held_idx])] = true;
+                        walls[statue_target].push(...walls[2].splice(held_idx, 1));
+                        roomThreeSentTargets[statue_idx] = true;
                         setWalls(walls);
                         setCurrentlyHeldInsideThree(null);
                         setRoomThreeSentTargets(roomThreeSentTargets);

@@ -29,7 +29,6 @@ html, body, #root {
   justify-content: center;
   font-size: calc(10px + 1vmin);
   font-weight: bold;
-  border-bottom: 1px solid #909090;
   color: white;
 }
 
@@ -45,6 +44,7 @@ html, body, #root {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  border-top: 1px solid #909090;
   border-bottom: 1px solid #909090;
   padding: 8px 0px;
   width: 100%
@@ -145,6 +145,20 @@ html, body, #root {
   align-self: center;
 }
 
+.ConditionsBlock {
+  background-color: #303030;
+  margin: 0;
+  padding-top: 4px;
+  padding-bottom: 8px;
+  align-self: center;
+  border-top: 1px solid #909090;
+}
+
+.ConditionsText {
+  color:#FFF;
+  font-size: small;
+}
+
 .CurrentShapesTitle {
   color:#FFF;
   margin: 0;
@@ -192,7 +206,7 @@ html, body, #root {
 .CurrentVolumeImageCleansed {
   width: 100px;
   height: 100px;
-  outline: 3px solid green;
+  outline: 3px solid limegreen;
   outline-offset: -3px;
 }
 
@@ -258,6 +272,12 @@ html, body, #root {
   margin-left: 15px;
   margin-right: 15px;
   border: 2px solid red;
+}
+
+.RoomSendButtonsCleansed {
+  margin-left: 15px;
+  margin-right: 15px;
+  border: 2px solid limegreen;
 }
 
 .Correct {
